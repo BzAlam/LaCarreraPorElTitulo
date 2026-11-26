@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La carrera por el título</title>
+<meta name="description" content="Juego de mesa digital en 3D con trivia sobre tu carrera. Tirá el dado, respondé y llegá primero.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#0679a0;--sky:#06a0c8;--pale:#dff3fd;--lime:#e6fbcb;--green:#2f7418;--green-btn:#3b841f;--ink:#17331a;--navy:#1d2b4f;--paper:#fbfef6;--r:16px}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font:500 1.0625rem/1.65 Quicksand,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--paper)}
+h1,h2,h3{font-family:"Lilita One",Impact,"Arial Black",sans-serif;font-weight:400;line-height:1.1;margin:0 0 .5em}
+h1{font-size:clamp(2.4rem,7vw,4.2rem)}
+h2{font-size:clamp(1.9rem,4.5vw,2.8rem)}
+h3{font-size:1.4rem}
+p{margin:0 0 1em;max-width:62ch}
+a{color:inherit}
+:focus-visible{outline:3px solid #ffd23f;outline-offset:3px}
+.wrap{max-width:1000px;margin:0 auto;padding:0 20px}
+.center{text-align:center}.center p{margin-inline:auto}
+section{padding:72px 0}
+.skip{position:absolute;left:-999px;top:8px;background:#fff;color:#000;padding:8px 14px;border-radius:8px;z-index:20}
+.skip:focus{left:8px}
+
+/* botones */
+.btn{display:inline-block;font:700 1rem Quicksand,sans-serif;padding:12px 26px;border-radius:10px;border:2px solid transparent;cursor:pointer;text-decoration:none;min-height:46px}
+.btn-solid{background:var(--lime);color:#1d4d0d}
+.btn-line{background:transparent;color:#fff;border-color:#fff}
+.btn-green{background:var(--green-btn);color:#fff}
+.btn-green-line{background:transparent;color:var(--green);border-color:var(--green)}
+.btn:hover{filter:brightness(1.07)}
+.btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:24px}
+
+/* encabezado + hero */
+.hero{background:var(--blue);color:#fff;padding:0 0 64px;text-align:center}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 20px;max-width:1000px;margin:0 auto;flex-wrap:wrap}
+.logo{background:var(--lime);color:var(--green);font:400 1rem/1 "Lilita One",Impact,sans-serif;padding:10px 14px;border-radius:8px;text-decoration:none;display:flex;align-items:center;gap:8px}
+.logo svg{width:22px;height:22px}
+.top nav{display:flex;gap:20px;align-items:center;font-weight:700;font-size:.95rem}
+.top nav a{text-decoration:none}.top nav a:hover{text-decoration:underline}
+.lang{background:transparent;color:#fff;border:2px solid #fff;border-radius:8px;font:700 .85rem Quicksand,sans-serif;padding:6px 12px;cursor:pointer;min-height:36px}
+.hero h1{margin-top:28px;color:#fff;text-shadow:3px 3px 0 #1b5e8f}
+.hero p.lead{font-size:1.2rem;margin:0 auto 24px}
+.frame{max-width:640px;margin:0 auto;border:6px solid var(--navy);border-radius:12px;background:var(--pale);overflow:hidden}
+.frame svg{display:block;width:100%;height:auto}
+
+/* banda lima: título + stats */
+.band{background:var(--lime);text-align:center;padding-top:56px}
+.band h2{color:var(--green);font-size:clamp(2.2rem,6vw,3.6rem);text-shadow:2px 2px 0 #b7e08a}
+.stats{display:flex;justify-content:center;gap:clamp(20px,6vw,64px);flex-wrap:wrap;margin:28px 0 0}
+.stats div{min-width:110px}
+.stats b{display:block;font:400 2.2rem/1 "Lilita One",sans-serif;color:var(--blue)}
+.stats span{font-size:.95rem}
+
+/* franja oscura con cartas */
+.dark{background:var(--navy);color:#fff;overflow:hidden}
+.dark .wrap{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center}
+.dark h2{font-size:clamp(2rem,5vw,3.2rem)}
+.cards{display:flex;justify-content:center;gap:0;min-height:230px;align-items:center}
+.card{width:120px;height:176px;border-radius:12px;border:3px solid #fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font:400 1.05rem "Lilita One",sans-serif;text-align:center;padding:8px;color:#fff}
+.card svg{width:48px;height:48px}
+.card:nth-child(1){background:#2f7418;transform:rotate(-10deg)}
+.card:nth-child(2){background:var(--sky);transform:translateY(-14px);z-index:1}
+.card:nth-child(3){background:#5b5b8f;transform:rotate(10deg)}
+.card:nth-child(1),.card:nth-child(3){margin-inline:-10px}
+
+/* cómo funciona */
+.how h2{color:var(--blue);text-align:center;margin-bottom:40px}
+.row{display:grid;grid-template-columns:200px 1fr;gap:28px;align-items:center;margin-bottom:36px}
+.row:nth-child(even){grid-template-columns:1fr 200px}
+.row:nth-child(even) .ico{order:2}
+.ico{height:130px;border-radius:var(--r);display:grid;place-items:center;font-size:3.4rem}
+.row:nth-child(1) .ico{background:#cdeec0}.row:nth-child(2) .ico{background:#bfe6f5}.row:nth-child(3) .ico{background:#ffe9a8}.row:nth-child(4) .ico{background:#f6cdd0}.row:nth-child(5) .ico{background:#d9d9f0}
+.row h3{color:var(--green);margin-bottom:.3em}.row p{margin:0}
+.quote{background:var(--lime);border-radius:var(--r);padding:28px;display:flex;gap:24px;align-items:center;flex-wrap:wrap;justify-content:center;margin-top:48px}
+.bubble{background:var(--blue);color:#fff;font:400 1.6rem/1.2 "Lilita One",sans-serif;padding:26px 34px;border-radius:60px;max-width:380px}
+.quote b{font:400 1.5rem "Lilita One",sans-serif;color:var(--green);display:block}
+
+/* compatibilidad */
+.compat{background:var(--paper)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:620px;margin:28px auto}
+.two div{border:3px solid var(--blue);border-radius:10px;padding:22px 14px;font:400 1.3rem "Lilita One",sans-serif;color:var(--blue)}
+.two div:last-child{background:var(--blue);color:#fff}
+.two span{display:block;font-size:2rem}
+
+/* demo */
+.demo{background:var(--pale)}
+.demo h2{color:var(--blue)}
+.quiz{background:#fff;border:3px solid var(--blue);border-radius:var(--r);max-width:680px;margin:28px auto 0;padding:24px;text-align:left}
+.meta{display:flex;justify-content:space-between;gap:12px;font-weight:700;font-size:.95rem;flex-wrap:wrap}
+.bar{height:12px;background:#d9ecf3;border-radius:8px;overflow:hidden;margin:10px 0 18px}
+.bar i{display:block;height:100%;width:100%;background:var(--green-btn);transition:width .1s linear}
+.bar.low i{background:#c0392b}
+.qtext{font:400 1.45rem/1.25 "Lilita One",sans-serif;margin:0 0 16px;color:var(--navy)}
+.opts{display:grid;gap:10px}
+.opt{font:700 1rem Quicksand,sans-serif;text-align:left;padding:13px 16px;border-radius:10px;border:2px solid var(--blue);background:#fff;color:var(--ink);cursor:pointer;min-height:48px}
+.opt:hover:not(:disabled){background:var(--pale)}
+.opt:disabled{cursor:default}
+.opt.gone{opacity:.35;text-decoration:line-through}
+.opt.ok{background:#d6f5c2;border-color:var(--green)}
+.opt.bad{background:#fadbd8;border-color:#a93226}
+.fb{min-height:1.6em;margin:14px 0 0;font-weight:700}
+.tools{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+
+/* equipo */
+.team h2{color:var(--green)}
+.people{display:flex;justify-content:center;gap:22px;flex-wrap:wrap;margin-top:28px}
+.person{width:130px}
+.avatar{width:110px;height:110px;border-radius:50%;margin:0 auto 10px;display:grid;place-items:center}
+.avatar svg{width:52px;height:78px;color:#243;}
+.tag{display:inline-block;background:var(--green);color:#fff;font-weight:700;font-size:.85rem;padding:3px 10px;border-radius:6px}
+.prof{margin-top:32px;font-weight:700}
+
+footer{background:var(--navy);color:#fff;padding:40px 0;font-size:.95rem}
+footer .wrap{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}
+footer b{font-family:"Lilita One",sans-serif;font-weight:400;display:block;margin-bottom:6px}
+footer a{display:block;text-decoration:none;opacity:.9}footer a:hover{text-decoration:underline}
+
+@media (max-width:720px){
+ .dark .wrap{grid-template-columns:1fr;text-align:center}
+ .row,.row:nth-child(even){grid-template-columns:1fr;gap:14px}
+ .row:nth-child(even) .ico{order:0}
+ .ico{height:100px}
+ section{padding:52px 0}
+ .top{justify-content:center}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.bar i{transition:none}}
+</style>
+</head>
+<body>
+<a class="skip" href="#demo" data-i="skip">Ir a la demo</a>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <symbol id="die" viewBox="0 0 100 100"><rect x="6" y="6" width="88" height="88" rx="18" fill="#4f9f2f"/><g fill="#123d12"><circle cx="30" cy="30" r="8"/><circle cx="70" cy="30" r="8"/><circle cx="50" cy="50" r="8"/><circle cx="30" cy="70" r="8"/><circle cx="70" cy="70" r="8"/></g></symbol>
+ <symbol id="pawn" viewBox="0 0 60 90"><circle cx="30" cy="18" r="14" fill="currentColor"/><path d="M30 30C14 44 12 62 8 74H52C48 62 46 44 30 30Z" fill="currentColor"/><rect x="4" y="74" width="52" height="12" rx="6" fill="currentColor"/></symbol>
+</svg>
+
+<header class="hero">
+ <div class="top">
+  <a class="logo" href="#"><svg aria-hidden="true"><use href="#die"/></svg><span>La carrera<br>por el título</span></a>
+  <nav aria-label="Principal">
+   <a href="#como" data-i="n1">Cómo funciona</a>
+   <a href="#demo" data-i="n2">Demo</a>
+   <a href="#equipo" data-i="n3">Equipo</a>
+   <button class="lang" id="lang" type="button" aria-label="Change language to English">EN</button>
+  </nav>
+ </div>
+ <div class="wrap">
+  <h1 data-i="h1">La carrera por el título</h1>
+  <p class="lead" data-i="lead">Un juego de mesa digital en 3D con preguntas sobre tu carrera. Tirá el dado, respondé y llegá primero.</p>
+  <div class="frame" role="img" aria-label="Tablero del juego con fichas y dados">
+   <svg viewBox="0 0 520 290" xmlns="http://www.w3.org/2000/svg">
+    <rect width="520" height="290" fill="#cfeaf6"/>
+    <polygon points="40,70 500,24 516,258 18,282" fill="#fff" stroke="#4a4a7a" stroke-width="5"/>
+    <g fill="#6aab6e"><ellipse cx="110" cy="120" rx="44" ry="22"/><ellipse cx="250" cy="100" rx="44" ry="22"/><ellipse cx="390" cy="86" rx="44" ry="22"/><ellipse cx="320" cy="190" rx="44" ry="22"/><ellipse cx="170" cy="215" rx="44" ry="22"/></g>
+    <g fill="#a9d8d6"><ellipse cx="180" cy="160" rx="40" ry="20"/><ellipse cx="330" cy="140" rx="40" ry="20"/><ellipse cx="450" cy="170" rx="40" ry="20"/><ellipse cx="60" cy="210" rx="36" ry="18"/></g>
+    <use href="#pawn" x="94" y="64" width="32" height="48" style="color:#4a4a7a"/>
+    <use href="#pawn" x="305" y="138" width="32" height="48" style="color:#0679a0"/>
+    <use href="#pawn" x="374" y="34" width="32" height="48" style="color:#2f7418"/>
+    <use href="#die" x="30" y="190" width="64" height="64"/>
+    <use href="#die" x="440" y="196" width="56" height="56"/>
+   </svg>
+  </div>
+  <div class="btns">
+   <a class="btn btn-solid" href="#demo" data-i="b1">Probar la demo</a>
+   <a class="btn btn-line" href="#como" data-i="b2">Cómo funciona</a>
+  </div>
+ </div>
+</header>
+
+<main id="main">
+<section class="band" aria-labelledby="t2">
+ <div class="wrap">
+  <h2 id="t2" data-i="h1b">La carrera por el título</h2>
+  <p data-i="band">Juego de mesa digital por turnos, en modo local. Gana quien completa primero la carrera universitaria.</p>
+  <div class="stats">
+   <div><b>3</b><span data-i="s1">vueltas</span></div>
+   <div><b>15 s</b><span data-i="s2">para responder</span></div>
+   <div><b>3</b><span data-i="s3">cartas por vuelta</span></div>
+  </div>
+  <div class="btns">
+   <a class="btn btn-green" href="#demo" data-i="b1">Probar la demo</a>
+   <a class="btn btn-green-line" href="#como" data-i="b2">Cómo funciona</a>
+  </div>
+ </div>
+</section>
+
+<section class="dark" aria-labelledby="t3">
+ <div class="wrap">
+  <div>
+   <h2 id="t3" data-i="dk">Tirás el dado. Respondés. Avanzás.</h2>
+   <p data-i="dkp">Tablero y piezas modelados en 3D, con cámara interactiva y efectos en las cartas.</p>
+  </div>
+  <div class="cards" aria-hidden="true">
+   <div class="card"><svg><use href="#die"/></svg><span data-i="c1">Casilla de pregunta</span></div>
+   <div class="card"><span style="font-size:2.6rem">💣</span><span data-i="c2">Carta Bomba</span></div>
+   <div class="card"><svg><use href="#die"/></svg><span data-i="c3">Casilla de juego</span></div>
+  </div>
+ </div>
+</section>
+
+<section class="how" id="como" aria-labelledby="t4">
+ <div class="wrap">
+  <h2 id="t4" data-i="how">Cómo funciona</h2>
+  <div class="row"><div class="ico" aria-hidden="true">🎲</div><div><h3 data-i="r1h">Tirá el dado</h3><p data-i="r1">Avanzá casilla a casilla, como en el Juego de la Oca. Las casillas especiales te hacen avanzar 2, retroceder 2 o perder un turno.</p></div></div>
+  <div class="row"><div class="ico" aria-hidden="true">⏱️</div><div><h3 data-i="r2h">Respondé en 15 segundos</h3><p data-i="r2">En las casillas de pregunta elegís entre 4 opciones. Si acertás, sumás 1 punto.</p></div></div>
+  <div class="row"><div class="ico" aria-hidden="true">💣</div><div><h3 data-i="r3h">Usá tus cartas</h3><p data-i="r3">Recibís 3 cartas por vuelta. La Carta Bomba elimina 2 opciones de respuesta.</p></div></div>
+  <div class="row"><div class="ico" aria-hidden="true">🆚</div><div><h3 data-i="r4h">Retá a un rival</h3><p data-i="r4">En las casillas de juego desafiás a otro jugador. Quien gana se lleva 1 punto.</p></div></div>
+  <div class="row"><div class="ico" aria-hidden="true">🏁</div><div><h3 data-i="r5h">Completá 3 vueltas</h3><p data-i="r5">Necesitás 3, 4 y 5 puntos en cada vuelta. Los puntos se reinician al terminarla, así que siempre se puede remontar.</p></div></div>
+  <div class="quote">
+   <p class="bubble" data-i="q">Es como el Juego de la Oca, pero con preguntas de tu carrera.</p>
+   <div><b data-i="qa">La idea del proyecto</b><span data-i="qb">Estudiar y divertirse en la misma partida</span></div>
+  </div>
+ </div>
+</section>
+
+<section class="compat center" aria-labelledby="t5">
+ <div class="wrap">
+  <h2 id="t5" style="color:var(--green)" data-i="cp">Para estudiar y para jugar</h2>
+  <div class="two">
+   <div><span aria-hidden="true">📚</span><span data-i="cp1">Estudiar entre partidas</span></div>
+   <div><span aria-hidden="true">🎉</span><span data-i="cp2">Jugar con amigos</span></div>
+  </div>
+  <p data-i="cpp">Sin armar tablero ni ordenar fichas: todo está en la pantalla.</p>
+ </div>
+</section>
+
+<section class="demo center" id="demo" aria-labelledby="t6">
+ <div class="wrap">
+  <h2 id="t6" data-i="dm">Probá una casilla de pregunta</h2>
+  <p data-i="dmp">Mini demo con 5 preguntas de ejemplo sobre diseño de interfaces. Tenés 15 segundos por pregunta y una Carta Bomba.</p>
+  <div class="quiz" id="quiz"></div>
+ </div>
+</section>
+
+<section class="team center" id="equipo" aria-labelledby="t7">
+ <div class="wrap">
+  <h2 id="t7" data-i="tm">Quiénes lo hicieron</h2>
+  <div class="people">
+   <div class="person"><div class="avatar" style="background:#9aeed3"><svg aria-hidden="true"><use href="#pawn"/></svg></div><span class="tag">Paloma Ferrara</span></div>
+   <div class="person"><div class="avatar" style="background:#f4d35e"><svg aria-hidden="true"><use href="#pawn"/></svg></div><span class="tag">Dalmiro Martins</span></div>
+   <div class="person"><div class="avatar" style="background:#f4d1d4"><svg aria-hidden="true"><use href="#pawn"/></svg></div><span class="tag">Ayelen Aranda</span></div>
+   <div class="person"><div class="avatar" style="background:#7cc8ff"><svg aria-hidden="true"><use href="#pawn"/></svg></div><span class="tag">Alan Benitez</span></div>
+   <div class="person"><div class="avatar" style="background:#e98a8a"><svg aria-hidden="true"><use href="#pawn"/></svg></div><span class="tag">Franco Corrales</span></div>
+  </div>
+  <p class="prof"><span data-i="pf">Profesora</span>: Nahir Acuña</p>
+ </div>
+</section>
+</main>
+
+<footer>
+ <div class="wrap">
+  <div><b data-i="f1">Navegar</b><a href="#como" data-i="n1">Cómo funciona</a><a href="#demo" data-i="n2">Demo</a><a href="#equipo" data-i="n3">Equipo</a></div>
+  <div><b data-i="f2">El juego</b><span data-i="f3">3 vueltas · trivia · modo local</span></div>
+  <div><b>La carrera por el título</b><span data-i="f4">Proyecto académico</span></div>
+ </div>
+</footer>
+
+<script>
+/* ---------- Idioma (ES por defecto, EN opcional) ---------- */
+const EN={skip:"Skip to demo",n1:"How it works",n2:"Demo",n3:"Team",h1:"The race for the degree",lead:"A 3D digital board game with questions about your studies. Roll the dice, answer and finish first.",b1:"Try the demo",b2:"How it works",h1b:"The race for the degree",band:"A turn-based digital board game, in local mode. Whoever finishes the university career first wins.",s1:"laps",s2:"to answer",s3:"cards per lap",dk:"Roll. Answer. Advance.",dkp:"3D board and pieces with an interactive camera and card effects.",c1:"Question tile",c2:"Bomb Card",c3:"Game tile",how:"How it works",r1h:"Roll the dice",r1:"Move tile by tile, like in Game of the Goose. Special tiles move you 2 spaces or make you skip a turn.",r2h:"Answer in 15 seconds",r2:"On question tiles you pick from 4 options. A correct answer gives you 1 point.",r3h:"Use your cards",r3:"You get 3 cards per lap. The Bomb Card removes 2 answer options.",r4h:"Challenge a rival",r4:"On game tiles you challenge another player. The winner takes 1 point.",r5h:"Complete 3 laps",r5:"You need 3, 4 and 5 points in each lap. Points reset after every lap, so a comeback is always possible.",q:"It's like Game of the Goose, but with questions about your studies.",qa:"The project's idea",qb:"Study and have fun in the same match",cp:"For studying and for playing",cp1:"Study between matches",cp2:"Play with friends",cpp:"No board to set up and no pieces to sort: everything is on screen.",dm:"Try a question tile",dmp:"Mini demo with 5 sample questions about interface design. You get 15 seconds per question and one Bomb Card.",tm:"Who made it",pf:"Teacher",f1:"Navigate",f2:"The game",f3:"3 laps · trivia · local mode",f4:"Academic project"};
+const UI={es:{start:"Empezar",q:"Pregunta",pts:"Puntos",s:"s",bomb:"Usar Carta Bomba (1)",next:"Siguiente",last:"Ver resultado",ok:"¡Correcto! +1 punto.",bad:"Incorrecto. La respuesta correcta está marcada.",time:"Se acabó el tiempo. La respuesta correcta está marcada.",win:"¡Pasaste la vuelta!",lose:"No llegaste a la meta de la vuelta.",res:(s,g)=>`Sumaste ${s} de 5 puntos. La meta era ${g}.`,again:"Jugar de nuevo",intro:"Presioná Empezar: el tiempo corre desde la primera pregunta."},
+en:{start:"Start",q:"Question",pts:"Points",s:"s",bomb:"Use Bomb Card (1)",next:"Next",last:"See result",ok:"Correct! +1 point.",bad:"Wrong. The correct answer is highlighted.",time:"Time's up. The correct answer is highlighted.",win:"You cleared the lap!",lose:"You didn't reach the lap goal.",res:(s,g)=>`You scored ${s} out of 5 points. The goal was ${g}.`,again:"Play again",intro:"Press Start: the clock runs from the first question."}};
+const Q=[
+{q:["¿Qué principio busca que una interfaz pueda ser usada por personas con distintas capacidades?","Which principle aims for an interface usable by people with different abilities?"],o:[["Accesibilidad","Resolución","Latencia","Fidelidad"],["Accessibility","Resolution","Latency","Fidelity"]],a:0},
+{q:["¿Para qué sirve un prototipo?","What is a prototype for?"],o:[["Medir la velocidad del servidor","Probar ideas con usuarios antes de construir","Traducir la interfaz","Guardar datos en la base"],["Measuring server speed","Testing ideas with users before building","Translating the interface","Storing data in the database"]],a:1},
+{q:["¿Qué contraste mínimo recomienda WCAG AA para texto normal?","What minimum contrast does WCAG AA recommend for normal text?"],o:[["1,5:1","3:1","4,5:1","21:1"],["1.5:1","3:1","4.5:1","21:1"]],a:2},
+{q:["¿Qué es un benchmark de interfaces?","What is an interface benchmark?"],o:[["Elegir la tipografía final","Validar un formulario","Medir la resolución de una pantalla","Comparar productos similares para detectar buenas prácticas"],["Choosing the final typeface","Validating a form","Measuring a screen's resolution","Comparing similar products to spot good practices"]],a:3},
+{q:["En una comunicación asincrónica, ¿qué pasa con el cliente?","In asynchronous communication, what does the client do?"],o:[["Espera bloqueado la respuesta","Sigue trabajando mientras llega la respuesta","Envía datos sin conexión","Cierra la interfaz hasta terminar"],["Waits, blocked, for the reply","Keeps working while the reply arrives","Sends data without a connection","Closes the interface until done"]],a:1}];
+const GOAL=3,TIME=15;
+let L="es",S={st:"idle",i:0,score:0,bomb:true,left:TIME,picked:null,gone:[],fb:"",t:null};
+const $=s=>document.querySelector(s),quiz=$("#quiz");
+const li=()=>L==="es"?0:1;
+
+/* traducción de textos estáticos */
+document.querySelectorAll("[data-i]").forEach(e=>e.dataset.es=e.textContent);
+function setLang(l){
+ L=l;document.documentElement.lang=l;
+ document.querySelectorAll("[data-i]").forEach(e=>{e.textContent=l==="en"?(EN[e.dataset.i]??e.dataset.es):e.dataset.es});
+ const b=$("#lang");b.textContent=l==="es"?"EN":"ES";b.setAttribute("aria-label",l==="es"?"Change language to English":"Cambiar idioma a español");
+ render();
+}
+$("#lang").addEventListener("click",()=>setLang(L==="es"?"en":"es"));
+
+/* ---------- Demo de preguntas ---------- */
+function tick(){
+ S.left=Math.max(0,S.left-0.1);
+ const bar=$(".bar"),secs=$("#secs");
+ if(bar){bar.firstElementChild.style.width=(S.left/TIME*100)+"%";bar.classList.toggle("low",S.left<=5)}
+ if(secs)secs.textContent=Math.ceil(S.left)+" "+UI[L].s;
+ if(S.left<=0){clearInterval(S.t);S.picked=-1;S.fb="time";render()}
+}
+function begin(){Object.assign(S,{st:"play",i:0,score:0,bomb:true});startQ()}
+function startQ(){clearInterval(S.t);Object.assign(S,{left:TIME,picked:null,gone:[],fb:""});render();S.t=setInterval(tick,100);$("#qt")&&$("#qt").focus()}
+function pick(k){
+ if(S.picked!==null)return;
+ clearInterval(S.t);S.picked=k;
+ if(k===Q[S.i].a){S.score++;S.fb="ok"}else S.fb="bad";
+ render();
+}
+function useBomb(){
+ if(!S.bomb||S.picked!==null)return;
+ const a=Q[S.i].a,wrong=[0,1,2,3].filter(x=>x!==a).sort(()=>Math.random()-.5);
+ S.gone=wrong.slice(0,2);S.bomb=false;render();
+}
+function next(){
+ if(S.i+1>=Q.length){S.st="end";render();return}
+ S.i++;startQ();
+}
+function render(){
+ const u=UI[L];
+ if(S.st==="idle"){
+  quiz.innerHTML=`<p>${u.intro}</p><button class="btn btn-green" id="go" type="button">${u.start}</button>`;
+  $("#go").onclick=begin;return;
+ }
+ if(S.st==="end"){
+  const w=S.score>=GOAL;
+  quiz.innerHTML=`<h3 style="color:var(--${w?"green":"navy"})" tabindex="-1" id="qt">${w?"🏁 "+u.win:u.lose}</h3><p>${u.res(S.score,GOAL)}</p><button class="btn btn-green" id="again" type="button">${u.again}</button>`;
+  $("#again").onclick=begin;$("#qt").focus();return;
+ }
+ const q=Q[S.i],done=S.picked!==null;
+ const opts=q.o[li()].map((t,k)=>{
+  let c="opt",m="";
+  if(S.gone.includes(k))c+=" gone";
+  if(done){if(k===q.a){c+=" ok";m="✔ "}else if(k===S.picked){c+=" bad";m="✘ "}}
+  return `<button type="button" class="${c}" data-k="${k}" ${done||S.gone.includes(k)?"disabled":""}>${m}${t}</button>`}).join("");
+ quiz.innerHTML=`<div class="meta"><span>${u.q} ${S.i+1}/${Q.length}</span><span>${u.pts}: ${S.score}</span><span id="secs">${Math.ceil(S.left)} ${u.s}</span></div>
+ <div class="bar" role="presentation"><i style="width:${S.left/TIME*100}%"></i></div>
+ <p class="qtext" id="qt" tabindex="-1">${q.q[li()]}</p>
+ <div class="opts">${opts}</div>
+ <p class="fb" role="status" aria-live="polite">${S.fb?u[S.fb]:""}</p>
+ <div class="tools"><button class="btn btn-green-line" id="bomb" type="button" ${S.bomb&&!done?"":"disabled"}>💣 ${u.bomb}</button>${done?`<button class="btn btn-green" id="nx" type="button">${S.i+1>=Q.length?u.last:u.next}</button>`:""}</div>`;
+ quiz.querySelectorAll(".opt").forEach(b=>b.onclick=()=>pick(+b.dataset.k));
+ $("#bomb").onclick=useBomb;
+ if(done)$("#nx").onclick=next,$("#nx").focus();
+}
+render();
+</script>
+</body>
+</html>
